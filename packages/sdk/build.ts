@@ -3,6 +3,7 @@ import { rolldown } from "rolldown";
 // Primary
 const bundle = await rolldown({
     input: "./src/index.ts",
+    external: ["@tauri-apps/api/core"],
 });
 await bundle.write({ format: "esm", file: "./dist/surrealdb.mjs" });
 await bundle.write({ format: "cjs", file: "./dist/surrealdb.cjs" });

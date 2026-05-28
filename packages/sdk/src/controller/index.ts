@@ -57,6 +57,14 @@ type ConnectionEvents = {
     using: [NamespaceDatabase, Session];
 };
 
+type BucketFolderAllowlistEngine = SurrealEngine & {
+    getBucketFolderAllowlist: () => Promise<string[]>;
+};
+
+function isBucketFolderAllowlistEngine(engine: SurrealEngine): engine is BucketFolderAllowlistEngine {
+    return "getBucketFolderAllowlist" in engine;
+}
+
 export class ConnectionController implements SurrealProtocol, EventPublisher<ConnectionEvents> {
     #eventPublisher = new Publisher<ConnectionEvents>();
     #context: DriverContext;
@@ -415,6 +423,16 @@ export class ConnectionController implements SurrealProtocol, EventPublisher<Con
     exportMlModel(options: MlExportOptions): Promise<Response | Uint8Array> {
         if (!this.#engine) throw new ConnectionUnavailableError();
         return this.#engine.exportMlModel(options);
+    }
+
+    async getBucketFolderAllowlist(): Promise<string[]> {
+        if (!this.#engine) throw new ConnectionUnavailableError();
+
+        if (!isBucketFolderAllowlistEngine(this.#engine)) {
+            throw new Error("getBucketFolderAllowlist is only available on tauri:// connections");
+        }
+
+        return this.#engine.getBucketFolderAllowlist();
     }
 
     query<T>(query: BoundQuery, session: Session, txn?: Uuid): AsyncIterable<QueryChunk<T>> {

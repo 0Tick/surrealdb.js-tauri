@@ -3,6 +3,13 @@ import { JsonCodec } from "../codec/json/codec.ts";
 import { hasSymbol, markSymbol, UUID_SYMBOL } from "../utils/symbols.ts";
 import { Value } from "./value.ts";
 
+function isArrayBufferLike(value: unknown): value is ArrayBufferLike {
+    return (
+        value instanceof ArrayBuffer ||
+        (typeof SharedArrayBuffer !== "undefined" && value instanceof SharedArrayBuffer)
+    );
+}
+
 /**
  * A SurrealQL UUID value.
  */
@@ -38,7 +45,7 @@ export class Uuid extends Value {
     constructor(uuid: Uuid | UUID | string | ArrayBufferLike | Uint8Array) {
         super();
 
-        if (uuid instanceof ArrayBuffer || uuid instanceof SharedArrayBuffer) {
+        if (isArrayBufferLike(uuid)) {
             this.#inner = UUID.ofInner(new Uint8Array(uuid));
         } else if (uuid instanceof Uint8Array) {
             this.#inner = UUID.ofInner(uuid);

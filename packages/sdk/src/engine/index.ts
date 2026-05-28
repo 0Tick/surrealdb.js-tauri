@@ -1,10 +1,12 @@
 import type { Engines } from "../types";
 import { type DiagnosticsCallback, DiagnosticsEngine } from "./diagnostics";
 import { HttpEngine } from "./http";
+import { TauriEngine } from "./tauri";
 import { WebSocketEngine } from "./websocket";
 
 export { HttpEngine } from "./http";
 export { RpcEngine } from "./rpc";
+export { getBucketFolderAllowlist, TauriEngine } from "./tauri";
 export { WebSocketEngine } from "./websocket";
 
 /**
@@ -23,6 +25,7 @@ export { WebSocketEngine } from "./websocket";
  * ```
  */
 export const createRemoteEngines = (): Engines => ({
+    tauri: (ctx) => new TauriEngine(ctx),
     ws: (ctx) => new WebSocketEngine(ctx),
     wss: (ctx) => new WebSocketEngine(ctx),
     http: (ctx) => new HttpEngine(ctx),

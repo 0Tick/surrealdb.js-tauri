@@ -271,4 +271,14 @@ export class Surreal extends SurrealSession implements EventPublisher<SurrealEve
     public exportModel(name: string, version: string): ExportModelPromise {
         return new ExportModelPromise(this.#connection, { name, version }, false);
     }
+
+    /**
+     * Retrieve the configured file bucket folder allowlist from the embedded Tauri bridge.
+     *
+     * This method is only supported for tauri:// connections.
+     */
+    public async getBucketFolderAllowlist(): Promise<string[]> {
+        await this.ready;
+        return this.#connection.getBucketFolderAllowlist();
+    }
 }
