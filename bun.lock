@@ -61,13 +61,17 @@
         "compare-versions": "^6.1.1",
       },
       "peerDependencies": {
+        "@tauri-apps/api": "^2",
         "tslib": "^2.6.3",
-        "typescript": "^5.0.0",
+        "typescript": "^5.0.0 || ^6.0.0",
       },
+      "optionalPeers": [
+        "@tauri-apps/api",
+      ],
     },
     "packages/sqon": {
       "name": "@surrealdb/sqon",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@surrealdb/cbor": "2.0.0-alpha.4",
         "uuidv7": "^1.0.1",
@@ -85,7 +89,6 @@
       "dependencies": {
         "@surrealdb/cbor": "2.0.0-alpha.4",
         "@surrealdb/node": "workspace:*",
-        "@surrealdb/sqon": "workspace:*",
         "@surrealdb/wasm": "workspace:*",
         "get-port": "^7.1.0",
         "surrealdb": "workspace:*",
@@ -93,7 +96,7 @@
     },
     "packages/wasm": {
       "name": "@surrealdb/wasm",
-      "version": "3.0.3",
+      "version": "3.0.4",
       "devDependencies": {
         "surrealdb": "^2.0.1",
       },
