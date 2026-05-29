@@ -20,6 +20,7 @@
         "deploy": "bun run ../../scripts/publish.ts"
     },
     "devDependencies": {
+        "@tauri-apps/api": "^2",
         "@types/bun": "^1.2.21",
         "@types/node": "^24.3.0",
         "compare-versions": "^6.1.1"

@@ -56,6 +56,7 @@
         "@surrealdb/sqon": "workspace:*",
       },
       "devDependencies": {
+        "@tauri-apps/api": "^2",
         "@types/bun": "^1.2.21",
         "@types/node": "^24.3.0",
         "compare-versions": "^6.1.1",
@@ -437,6 +438,8 @@
     "@surrealdb/wasm": ["@surrealdb/wasm@workspace:packages/wasm"],
 
     "@surrealdb/wasm-demo": ["@surrealdb/wasm-demo@workspace:demo/wasm"],
+
+    "@tauri-apps/api": ["@tauri-apps/api@2.11.0", "", {}, "sha512-7CinYODhky9lmO23xHnUFv0Xt43fbtWMyxZcLcRBlFkcgXKuEirBvHpmtJ89YMhyeGcq20Wuc47Fa4XjyniywA=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-VyyPYFlOMNylG45GoAe0xDoLwWuowvf92F9kySqzYh8vmYm7D2u4iUJKa1tOUpS70Ku13ASrOkS4ScXFsTaCNQ=="],
 
