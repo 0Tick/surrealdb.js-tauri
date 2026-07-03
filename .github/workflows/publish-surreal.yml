@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
-        run: bun install
+        run: bun ci
 
       - name: Validate package versions
         run: bun run validate:versions
@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
-        run: bun install
+        run: bun ci
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@631a55b12751854ce901bb631d5902ceb48146f7 # stable
@@ -66,7 +66,7 @@ jobs:
         run: cargo install -f wasm-bindgen-cli --version 0.2.108
 
       - name: Install wasm-opt
-        run: cargo install wasm-opt
+        run: cargo install wasm-opt --version 0.116.1
 
       - name: Build WASM
         run: bun run build:wasm
@@ -101,12 +101,12 @@ jobs:
             target: x86_64-pc-windows-msvc
 
           - name: Linux x86_64 (gnu)
-            host: ubuntu-22.04
+            host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             build: bun run build:node --target x86_64-unknown-linux-gnu -x
 
           - name: Linux x86_64 (musl)
-            host: ubuntu-22.04
+            host: ubuntu-latest
             target: x86_64-unknown-linux-musl
             build: bun run build:node --target x86_64-unknown-linux-musl -x
 
@@ -116,12 +116,12 @@ jobs:
             build: bun run build:node --target aarch64-apple-darwin
 
           - name: Linux aarch64 (gnu)
-            host: ubuntu-22.04
+            host: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             build: bun run build:node --target aarch64-unknown-linux-gnu -x
 
           - name: Linux aarch64 (musl)
-            host: ubuntu-22.04
+            host: ubuntu-latest
             target: aarch64-unknown-linux-musl
             build: bun run build:node --target aarch64-unknown-linux-musl -x
 
@@ -182,7 +182,7 @@ jobs:
           tool: cargo-zigbuild
 
       - name: Install dependencies
-        run: bun install
+        run: bun ci
 
       - name: Build
         shell: bash
@@ -224,7 +224,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
-        run: bun install
+        run: bun ci
 
       - name: Download WASM artifacts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -283,7 +283,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Install dependencies
-        run: bun install
+        run: bun ci
 
       - name: Download WASM artifacts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0

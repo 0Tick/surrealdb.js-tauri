@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "isolatedDeclarations": false
+        "isolatedDeclarations": false,
+        "types": ["bun"]
     }
 }

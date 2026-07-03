@@ -14,6 +14,7 @@ import {
 import type { Feature } from "../internal/feature";
 import { getSessionFromState } from "../internal/get-session-from-state";
 import { ReconnectContext } from "../internal/reconnect";
+import { RetryContext } from "../internal/retry";
 import { fastParseJwt } from "../internal/tokens";
 import type {
     AccessRecordAuth,
@@ -30,6 +31,7 @@ import type {
     NamespaceDatabase,
     Nullable,
     QueryChunk,
+    RetryOptions,
     Session,
     SqlExportOptions,
     SurrealEngine,
@@ -74,9 +76,9 @@ export class ConnectionController implements SurrealProtocol, EventPublisher<Con
     #status: ConnectionStatus = "disconnected";
     #authProvider: AuthProvider | undefined;
     #cachedVersion: string | undefined;
-
-    #skipRenewal = false;
-    #checkVersion = false;
+    #expiryMargin: number = 60;
+    #skipRenewal: boolean = false;
+    #checkVersion: boolean = false;
 
     subscribe<K extends keyof ConnectionEvents>(
         event: K,
@@ -126,10 +128,12 @@ export class ConnectionController implements SurrealProtocol, EventPublisher<Con
         this.#authProvider = options.authentication;
         this.#skipRenewal = options.invalidateOnExpiry ?? false;
         this.#checkVersion = options.versionCheck ?? true;
+        this.#expiryMargin = options.expiryMargin ?? 60;
         this.#state = {
             url,
             sessions: new Map(),
             reconnect: new ReconnectContext(options.reconnect),
+            retry: RetryContext.mergeOptions(options.retry),
             rootSession: {
                 ...this.#createSessionState(undefined),
                 namespace: options.namespace,
@@ -184,6 +188,12 @@ export class ConnectionController implements SurrealProtocol, EventPublisher<Con
         if (!feature.supports(this.#cachedVersion)) {
             throw new UnavailableFeatureError(feature, this.#cachedVersion);
         }
+    }
+
+    public get retry(): RetryOptions {
+        if (!this.#state) throw new ConnectionUnavailableError();
+
+        return this.#state.retry;
     }
 
     #instanceEngine(url: URL): SurrealEngine {
@@ -563,15 +573,18 @@ export class ConnectionController implements SurrealProtocol, EventPublisher<Con
 
         if (!payload || !payload.exp) return;
 
-        // Renew 60 seconds before expiry
         const now = Math.floor(Date.now() / 1000);
-        const delay = Math.max((payload.exp - now - 60) * 1000, 0);
+        const remaining = Math.max(payload.exp - now, 0);
+        const delay = Math.min(
+            remaining,
+            Math.max(remaining - this.#expiryMargin, this.#expiryMargin),
+        );
 
         sessionState.authRenewal = setTimeout(() => {
             this.#applyAuthentication(session).catch((err) => {
                 this.#eventPublisher.publish("error", new AuthenticationError(err));
             });
-        }, delay);
+        }, delay * 1000);
     }
 
     async #abortAuthentication(session: Session): Promise<void> {
@@ -599,9 +612,13 @@ export class ConnectionController implements SurrealProtocol, EventPublisher<Con
 
             if (payload?.exp) {
                 const now = Math.floor(Date.now() / 1000);
-                const isValid = payload.exp - now > 60;
+                const remaining = Math.max(payload.exp - now, 0);
+                const renewalDelay = Math.min(
+                    remaining,
+                    Math.max(remaining - this.#expiryMargin, this.#expiryMargin),
+                );
 
-                if (isValid) {
+                if (remaining > renewalDelay) {
                     try {
                         await this.authenticate(sessionState.accessToken, session, true);
                         return;
